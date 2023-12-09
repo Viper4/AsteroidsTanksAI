@@ -4,21 +4,20 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
-public class LayerManager : MonoBehaviour
+public class TanksLayerManager : MonoBehaviour
 {
-    [SerializeField] AsteroidsTrainer trainer;
-    [SerializeField] AsteroidSpawner asteroidSpawner;
+    [SerializeField] TanksTrainer trainer;
     [SerializeField] MultiDropdown layerDropdown;
 
     public bool[] activeLayers;
     bool[] previousLayers;
-    int focusedLayer = -1;
+    TankAgent focusedAgent;
     [SerializeField] TextMeshProUGUI layerTitle;
     [SerializeField] TextMeshProUGUI layerStats;
 
     void Start()
     {
-        for(int i = 0; i < trainer.populationSize; i++)
+        for (int i = 0; i < trainer.totalGames; i++)
         {
             layerDropdown.values.Add(i);
             layerDropdown.options.Add(new Dropdown.OptionData() { text = "Layer " + i });
@@ -28,13 +27,14 @@ public class LayerManager : MonoBehaviour
 
     private void Update()
     {
-        if(Input.GetKeyDown(KeyCode.Mouse0))
+        if (Input.GetKeyDown(KeyCode.Mouse0))
         {
-            if(focusedLayer == -1)
+            if (focusedAgent == null)
             {
-                if(Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out RaycastHit hit, Mathf.Infinity) && hit.transform.TryGetComponent<CustomLayers>(out var customLayers))
+                if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out RaycastHit hit, Mathf.Infinity) && hit.transform.TryGetComponent<TankAgent>(out var tankAgent))
                 {
-                    Focus(customLayers.gameLayer);
+                    Focus(tankAgent.customLayers.gameLayer);
+                    focusedAgent = tankAgent;
                 }
             }
             else
@@ -42,33 +42,31 @@ public class LayerManager : MonoBehaviour
                 UnFocus();
             }
         }
-        if(focusedLayer != -1)
-            layerStats.text = trainer.GetAgentStats(focusedLayer);
+        if (focusedAgent != null)
+            layerStats.text = focusedAgent.GetStats();
     }
 
     public void SelectLayer(int layer, bool value)
     {
         activeLayers[layer] = value;
-        trainer.ShowAgent(layer, value);
-        asteroidSpawner.ShowLayer(layer, value);
+        trainer.ShowAgents(layer, value);
     }
 
     public void GenerationReset()
     {
-        if(activeLayers == null || activeLayers.Length != trainer.populationSize)
+        if (activeLayers == null || activeLayers.Length != trainer.totalGames)
         {
-            activeLayers = new bool[trainer.populationSize];
-            for(int i = 0; i < trainer.populationSize; i++)
+            activeLayers = new bool[trainer.totalGames];
+            for (int i = 0; i < trainer.totalGames; i++)
             {
                 activeLayers[i] = true;
             }
         }
         else
         {
-            for(int i = 0; i < trainer.populationSize; i++)
+            for (int i = 0; i < trainer.totalGames; i++)
             {
-                trainer.ShowAgent(i, activeLayers[i]);
-                asteroidSpawner.ShowLayer(i, activeLayers[i]);
+                trainer.ShowAgents(i, activeLayers[i]);
             }
         }
     }
@@ -82,8 +80,6 @@ public class LayerManager : MonoBehaviour
             SelectLayer(i, i == layer);
         }
         layerTitle.text = "Layer " + layer;
-
-        focusedLayer = layer;
     }
 
     void UnFocus()
@@ -93,6 +89,6 @@ public class LayerManager : MonoBehaviour
             SelectLayer(i, previousLayers[i]);
         }
 
-        focusedLayer = -1;
+        focusedAgent = null;
     }
 }

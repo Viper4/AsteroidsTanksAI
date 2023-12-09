@@ -12,8 +12,8 @@ public class AsteroidsTrainer : MonoBehaviour
     public int populationSize = 20;
     [SerializeField] GameObject agentPrefab;
 
-    [SerializeField] [Range(0.0001f, 1)] float mutationChance = 0.05f;
-    [SerializeField] [Range(0, 1)] float mutationStrength = 0.5f;
+    [SerializeField, Range(0.0001f, 1)] float mutationChance = 0.05f;
+    [SerializeField, Range(0, 1)] float mutationStrength = 0.5f;
     [SerializeField] float gameSpeed = 1;
     [SerializeField] float resetTime;
     [SerializeField] NeuralNetwork.Activations activationFunction;
@@ -23,7 +23,7 @@ public class AsteroidsTrainer : MonoBehaviour
 
     int generation = 0;
 
-    [SerializeField] AsteroidSpawner asteroidSpawner;
+    public AsteroidSpawner asteroidSpawner;
     public UnityEvent onReset;
 
     [SerializeField] Transform bulletParent;

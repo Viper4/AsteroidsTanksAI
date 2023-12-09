@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class ShipBullet : MonoBehaviour
 {
-    CustomLayers layerManager;
+    CustomLayers customLayers;
     public Ship owner;
 
     [SerializeField] float bulletSpeed = 5;
@@ -12,14 +12,14 @@ public class ShipBullet : MonoBehaviour
 
     private void Awake()
     {
-        layerManager = GetComponent<CustomLayers>();
+        customLayers = GetComponent<CustomLayers>();
         GetComponent<Rigidbody>().velocity = transform.forward * bulletSpeed;
         Invoke(nameof(Kill), dieTime);
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        if(other.GetComponent<CustomLayers>().gameLayer == layerManager.gameLayer)
+        if(other.GetComponent<CustomLayers>().gameLayer == customLayers.gameLayer)
         {
             if(other.transform.CompareTag("Asteroid") && owner != null)
                 owner.asteroidsDestroyed++;

@@ -6,78 +6,96 @@ using UnityEngine.Events;
 public class Tank : MonoBehaviour
 {
     public CustomLayers customLayers;
-    public MeshRenderer meshRenderer;
+    public MeshRenderer[] meshRenderers;
+    public Collider tankCollider;
     Rigidbody _rigidbody;
 
-    [SerializeField] Transform turret;
+    [SerializeField] bool player;
+
+    public Transform turret;
     [SerializeField] Transform barrel;
 
     [SerializeField] float speed;
 
     [SerializeField] float sensitivity = 10;
     [SerializeField] Vector2 pitchMinMax;
-    [SerializeField] float barrelPitchMax;
     float yaw;
     float pitch;
 
-    bool canShoot;
+    bool canShoot = true;
     [SerializeField] float shootDelay = 0.25f;
     [SerializeField] GameObject bulletPrefab;
     [SerializeField] Transform bulletSpawn;
     public Transform bulletParent;
 
+    public int kills;
     public bool layerActive = true;
     public UnityEvent<bool> onShow;
 
     public void Init()
     {
         customLayers = GetComponent<CustomLayers>();
-        meshRenderer = GetComponent<MeshRenderer>();
         _rigidbody = GetComponent<Rigidbody>();
+        pitch = turret.eulerAngles.x;
+        yaw = turret.eulerAngles.y;
     }
 
     void Start()
     {
-        Init();
+        if(player)
+        {
+            Init();
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+            for(int i = 0; i < meshRenderers.Length; i++)
+            {
+                meshRenderers[i].enabled = false;
+            }
+        }
     }
 
     void Update()
     {
-        // Movement
-        Vector2 inputDir = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical")).normalized;
-
-        if (inputDir != Vector2.zero)
+        if(player)
         {
-            float targetY = Mathf.Atan2(inputDir.x, inputDir.y) * Mathf.Rad2Deg + Camera.main.transform.eulerAngles.y;
+            // Camera rotation
+            Rotate(-Input.GetAxis("Mouse Y"), Input.GetAxis("Mouse X"));
+            Camera.main.transform.eulerAngles = new Vector3(pitch, yaw, transform.eulerAngles.z);
+            Camera.main.transform.position = turret.position;
+
+            Vector2 inputDir = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical")).normalized;
+            Move(inputDir);
+
+            if (Input.GetKeyDown(KeyCode.Mouse0))
+                Shoot();
+        }
+    }
+
+    public void Rotate(float pitch, float yaw)
+    {
+        this.yaw += yaw * sensitivity;
+        this.pitch += pitch * sensitivity;
+        this.pitch = Mathf.Clamp(this.pitch, pitchMinMax.x, pitchMinMax.y);
+        turret.eulerAngles = new Vector3(turret.eulerAngles.x, this.yaw, turret.eulerAngles.z);
+        barrel.localEulerAngles = new Vector3(this.pitch, barrel.localEulerAngles.y, barrel.localEulerAngles.z);
+    }
+
+    public void Move(Vector2 input)
+    {
+        if(input != Vector2.zero)
+        {
+            float targetY = Mathf.Atan2(input.x, input.y) * Mathf.Rad2Deg + yaw;
             transform.rotation = Quaternion.Euler(new Vector3(transform.eulerAngles.x, targetY, transform.eulerAngles.z));
         }
 
-        float targetSpeed = speed * 0.5f * inputDir.magnitude;
+        float targetSpeed = speed * 0.5f * input.magnitude;
 
-        Vector3 velocityDirection = transform.forward;
-
-        if (Physics.Raycast(transform.position, -transform.up, out RaycastHit middleHit, 1) && Physics.Raycast(transform.position + transform.forward, -transform.up, out RaycastHit frontHit, 1))
-        {
-            velocityDirection = frontHit.point - middleHit.point;
-        }
-
-        _rigidbody.velocity = targetSpeed * velocityDirection;
-
-        // Camera rotation
-        yaw += Input.GetAxis("Mouse X") * sensitivity / 4;
-        pitch -= Input.GetAxis("Mouse Y") * sensitivity / 4;
-        pitch = Mathf.Clamp(pitch, pitchMinMax.x, pitchMinMax.y);
-        Camera.main.transform.eulerAngles = new Vector3(pitch, yaw, transform.eulerAngles.z);
-        turret.localEulerAngles = new Vector3(0, yaw, 0);
-        barrel.localEulerAngles = new Vector3(pitch, 0, 0);
-
-        if (Input.GetKeyDown(KeyCode.Mouse0))
-            Shoot();
+        _rigidbody.velocity = targetSpeed * transform.forward;
     }
 
     public void Shoot()
     {
-        if (canShoot)
+        if(canShoot)
             StartCoroutine(ShootRoutine());
     }
 
@@ -90,13 +108,13 @@ public class Tank : MonoBehaviour
 
         MeshRenderer bulletMeshRenderer = bullet.GetComponent<MeshRenderer>();
         bulletMeshRenderer.enabled = layerActive;
-        bulletMeshRenderer.material.color = meshRenderer.material.color;
-        bulletMeshRenderer.material.SetColor("_EmissionColor", meshRenderer.material.color);
+        bulletMeshRenderer.material.color = meshRenderers[0].material.color;
+        bulletMeshRenderer.material.SetColor("_EmissionColor", meshRenderers[0].material.color);
 
         TrailRenderer bulletTrailRenderer = bullet.GetComponent<TrailRenderer>();
         bulletTrailRenderer.enabled = layerActive;
-        bulletTrailRenderer.material.color = meshRenderer.material.color;
-        bulletTrailRenderer.material.SetColor("_EmissionColor", meshRenderer.material.color);
+        bulletTrailRenderer.material.color = meshRenderers[0].material.color;
+        bulletTrailRenderer.material.SetColor("_EmissionColor", meshRenderers[0].material.color);
 
         bullet.GetComponent<CustomLayers>().gameLayer = customLayers.gameLayer;
         yield return new WaitForSeconds(shootDelay);
@@ -107,12 +125,15 @@ public class Tank : MonoBehaviour
     {
         layerActive = value;
         onShow?.Invoke(value);
-        GetComponent<MeshRenderer>().enabled = value;
+        for(int i = 0; i < meshRenderers.Length; i++)
+        {
+            meshRenderers[i].enabled = value;
+        }
     }
 
     public void TogglePhysics(bool value)
     {
-        GetComponent<Collider>().enabled = value;
+        tankCollider.enabled = value;
         _rigidbody.isKinematic = !value;
     }
 }

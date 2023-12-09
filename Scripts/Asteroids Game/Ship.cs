@@ -6,10 +6,11 @@ using UnityEngine.Events;
 public class Ship : MonoBehaviour
 {
     public CustomLayers customLayers;
+    public MeshRenderer meshRenderer;
+    Rigidbody _rigidbody;
 
     [SerializeField] bool player;
 
-    Rigidbody _rigidbody;
     [SerializeField] float moveSpeed = 1;
     [SerializeField] float rotateSpeed = 5;
 
@@ -18,46 +19,49 @@ public class Ship : MonoBehaviour
     [SerializeField] GameObject bulletPrefab;
     [SerializeField] Transform bulletSpawn;
 
-    public int asteroidsDestroyed = 0;
+    public int asteroidsDestroyed;
     public bool layerActive = true;
     public UnityEvent<bool> onShow;
 
-    public MeshRenderer meshRenderer;
 
     public Transform bulletParent;
-
-    void Start()
-    {
-        Init();
-    }
-
-    void Update()
-    {
-        if (Input.GetKey(KeyCode.W))
-        {
-            Move(1);
-        }
-
-        float rotateValue = 0;
-        if (Input.GetKey(KeyCode.A))
-        {
-            rotateValue -= 1;
-        }
-        if (Input.GetKey(KeyCode.D))
-        {
-            rotateValue += 1;
-        }
-        Rotate(rotateValue);
-
-        if (Input.GetKeyDown(KeyCode.Mouse0))
-            Shoot();
-    }
 
     public void Init()
     {
         customLayers = GetComponent<CustomLayers>();
-        _rigidbody = GetComponent<Rigidbody>();
         meshRenderer = GetComponent<MeshRenderer>();
+        _rigidbody = GetComponent<Rigidbody>();
+    }
+
+    void Start()
+    {
+        if (player)
+            Init();
+    }
+
+    void Update()
+    {
+        if (player)
+        {
+            if (Input.GetKey(KeyCode.W))
+            {
+                Move(1);
+            }
+
+            float rotateValue = 0;
+            if (Input.GetKey(KeyCode.A))
+            {
+                rotateValue -= 1;
+            }
+            if (Input.GetKey(KeyCode.D))
+            {
+                rotateValue += 1;
+            }
+            Rotate(rotateValue);
+
+            if (Input.GetKeyDown(KeyCode.Mouse0))
+                Shoot();
+        }
     }
 
     public void Move(float value)

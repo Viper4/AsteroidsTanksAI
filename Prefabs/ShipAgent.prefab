@@ -48,7 +48,7 @@ GameObject:
   - component: {fileID: 8500522474873107237}
   - component: {fileID: -4780452228897460758}
   m_Layer: 7
-  m_Name: Agent
+  m_Name: ShipAgent
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -150,7 +150,7 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5277867176063527984}
   serializedVersion: 4
-  m_Mass: 2
+  m_Mass: 1
   m_Drag: 0.5
   m_AngularDrag: 0.05
   m_CenterOfMass: {x: 0, y: 0, z: 0}
@@ -181,8 +181,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 61903127a0b80924c826ede71ecff107, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxX: 40
-  maxZ: 40
+  maxX: 35
+  maxZ: 35
 --- !u!114 &8500522474873107237
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -196,8 +196,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   customLayers: {fileID: 0}
+  meshRenderer: {fileID: 0}
   player: 0
-  moveSpeed: 1300
+  moveSpeed: 1350
   rotateSpeed: 210
   shootDelay: 0.25
   bulletPrefab: {fileID: 5925218692129818934, guid: c6bd95b2b1b369c4b95586e1a9e59c4f, type: 3}
@@ -207,10 +208,9 @@ MonoBehaviour:
   onShow:
     m_PersistentCalls:
       m_Calls: []
-  meshRenderer: {fileID: 0}
   bulletParent: {fileID: 0}
   trainer: {fileID: 0}
-  numOfRaycasts: 24
+  numOfRaycasts: 32
   ignoreLayers:
     serializedVersion: 2
     m_Bits: 420

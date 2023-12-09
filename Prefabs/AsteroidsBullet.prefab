@@ -18,7 +18,7 @@ GameObject:
   - component: {fileID: -6763004670653746122}
   - component: {fileID: -2584922889130661375}
   m_Layer: 8
-  m_Name: Bullet
+  m_Name: AsteroidsBullet
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -277,8 +277,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 61903127a0b80924c826ede71ecff107, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxX: 40
-  maxZ: 40
+  maxX: 35
+  maxZ: 35
 --- !u!114 &-2584922889130661375
 MonoBehaviour:
   m_ObjectHideFlags: 0

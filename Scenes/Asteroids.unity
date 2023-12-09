@@ -861,14 +861,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8e1cb92008c63e14ca7587931225f059, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  modelFolder: C:\Users\Lucas\UnityProjects\Interactive AI For CS Club\Assets\AIModels\
-  fileName: 24InputModel.txt
-  layers: 18000000140000001400000003000000
+  modelFolder: C:\Users\Lucas\UnityProjects\Interactive AI For CS Club\Assets\AsteroidsModels\
+  fileName: 32InputModel.txt
+  layers: 20000000140000001400000003000000
   populationSize: 40
   agentPrefab: {fileID: 5277867176063527984, guid: 398f37e8febcee243942b43893d05580, type: 3}
   mutationChance: 0.1
   mutationStrength: 0.5
-  gameSpeed: 1.75
+  gameSpeed: 1.5
   resetTime: 240
   activationFunction: 1
   asteroidSpawner: {fileID: 1767273600}
@@ -912,12 +912,12 @@ MonoBehaviour:
           m_BoolArgument: 0
         m_CallState: 2
       - m_Target: {fileID: 1767273600}
-        m_TargetAssemblyTypeName: PrefabSpawner, Assembly-CSharp
+        m_TargetAssemblyTypeName: AsteroidSpawner, Assembly-CSharp
         m_MethodName: ResetSpawner
         m_Mode: 2
         m_Arguments:
           m_ObjectArgument: {fileID: 637543156}
-          m_ObjectArgumentAssemblyTypeName: Trainer, Assembly-CSharp
+          m_ObjectArgumentAssemblyTypeName: AsteroidsTrainer, Assembly-CSharp
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
@@ -1873,10 +1873,11 @@ MonoBehaviour:
   prefabs:
   - {fileID: 1701341816232840571, guid: ae54ae3dfb7e302478e846db9beefa21, type: 3}
   rate: 1.5
-  xRange: {x: -40, y: 40}
-  zRange: {x: -40, y: 40}
+  xRange: {x: -35, y: 35}
+  zRange: {x: -35, y: 35}
   startSpeeds:
   - 16.5
+  randomizeEveryLayer: 1
 --- !u!4 &1767273601
 Transform:
   m_ObjectHideFlags: 0
@@ -2270,7 +2271,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: -1, z: 0}
-  m_LocalScale: {x: 8, y: 8, z: 8}
+  m_LocalScale: {x: 7, y: 7, z: 7}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -2377,8 +2378,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   customLayers: {fileID: 0}
+  meshRenderer: {fileID: 0}
   player: 1
-  moveSpeed: 1300
+  moveSpeed: 1350
   rotateSpeed: 210
   shootDelay: 0.2
   bulletPrefab: {fileID: 5925218692129818934, guid: c6bd95b2b1b369c4b95586e1a9e59c4f, type: 3}
@@ -2388,7 +2390,6 @@ MonoBehaviour:
   onShow:
     m_PersistentCalls:
       m_Calls: []
-  meshRenderer: {fileID: 0}
   bulletParent: {fileID: 0}
 --- !u!64 &2369932419746084699
 MeshCollider:
@@ -2420,7 +2421,7 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2019789405838565958}
   serializedVersion: 4
-  m_Mass: 2
+  m_Mass: 1
   m_Drag: 0.5
   m_AngularDrag: 0.05
   m_CenterOfMass: {x: 0, y: 0, z: 0}
@@ -2451,8 +2452,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 61903127a0b80924c826ede71ecff107, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxX: 40
-  maxZ: 40
+  maxX: 35
+  maxZ: 35
 --- !u!114 &2369932419746084702
 MonoBehaviour:
   m_ObjectHideFlags: 0

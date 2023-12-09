@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class AsteroidSpawner : MonoBehaviour
 {
-    [SerializeField] LayerManager layerManager;
+    [SerializeField] AsteroidsLayerManager layerManager;
     Dictionary<int, List<GameObject>> gameLayers = new Dictionary<int, List<GameObject>>();
     int numLayers = 1;
     [SerializeField] GameObject[] prefabs;
@@ -12,6 +12,7 @@ public class AsteroidSpawner : MonoBehaviour
     [SerializeField] Vector2 xRange;
     [SerializeField] Vector2 zRange;
     [SerializeField] float[] startSpeeds;
+    [SerializeField] bool randomizeEveryLayer = true;
 
     bool[] stoppedLayers;
 
@@ -48,12 +49,49 @@ public class AsteroidSpawner : MonoBehaviour
         gameLayers[layer].Add(asteroid);
     }
 
+    void Spawn(int layer, Vector3 position, Quaternion rotation, Vector3 velocity, int prefabIndex)
+    {
+        GameObject asteroid = Instantiate(prefabs[prefabIndex], position, rotation, transform);
+        asteroid.GetComponent<Rigidbody>().velocity = velocity;
+        asteroid.GetComponent<CustomLayers>().gameLayer = layer;
+        asteroid.GetComponent<Asteroid>().spawner = this;
+        MeshRenderer asteroidRenderer = asteroid.GetComponent<MeshRenderer>();
+        asteroidRenderer.enabled = layerManager.activeLayers[layer];
+        asteroidRenderer.material.color = Color.HSVToRGB(0 + (float)layer / numLayers, 1, 1);
+        gameLayers[layer].Add(asteroid);
+    }
+
     void SpawnLayers()
     {
-        for(int i = 0; i < numLayers; i++)
+        if(randomizeEveryLayer)
         {
-            if(!stoppedLayers[i])
-                Spawn(i);
+            for (int i = 0; i < numLayers; i++)
+            {
+                if (!stoppedLayers[i])
+                    Spawn(i);
+            }
+        }
+        else
+        {
+            int prefabIndex = Random.Range(0, prefabs.Length);
+            Vector3 randomDirection = Random.insideUnitSphere;
+            randomDirection.y = 0;
+            Vector3 randomPosition = Random.Range(0, 4) switch
+            {
+                0 => new Vector3(Random.Range(xRange.x, xRange.y), 0, zRange.y),
+                1 => new Vector3(Random.Range(xRange.x, xRange.y), 0, zRange.x),
+                2 => new Vector3(xRange.y, 0, Random.Range(zRange.x, zRange.y)),
+                3 => new Vector3(xRange.x, 0, Random.Range(zRange.x, zRange.y)),
+                _ => new Vector3(Random.Range(xRange.x, xRange.y), 0, zRange.y),
+            };
+            Quaternion randomRotation = Random.rotation;
+            Vector3 velocity = randomDirection * startSpeeds[prefabIndex];
+
+            for (int i = 0; i < numLayers; i++)
+            {
+                if (!stoppedLayers[i])
+                    Spawn(i, randomPosition, randomRotation, velocity, prefabIndex);
+            }
         }
     }
 

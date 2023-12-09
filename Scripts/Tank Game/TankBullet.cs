@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class TankBullet : MonoBehaviour
 {
-    CustomLayers layerManager;
+    CustomLayers customLayers;
     public Tank owner;
 
     [SerializeField] float bulletSpeed = 5;
@@ -12,16 +12,22 @@ public class TankBullet : MonoBehaviour
 
     private void Awake()
     {
-        layerManager = GetComponent<CustomLayers>();
+        customLayers = GetComponent<CustomLayers>();
         GetComponent<Rigidbody>().velocity = transform.forward * bulletSpeed;
         Invoke(nameof(Kill), dieTime);
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.GetComponent<CustomLayers>().gameLayer == layerManager.gameLayer)
+        if (!other.TryGetComponent<CustomLayers>(out var otherCustomLayers) || otherCustomLayers.gameLayer == customLayers.gameLayer)
         {
-            
+            if (other.CompareTag("Tank"))
+            {
+                if(other.GetComponent<Tank>() != owner)
+                    owner.kills++;
+                if(other.TryGetComponent<TankAgent>(out var agent))
+                    agent.SetDeath(true);
+            }
             Kill();
         }
     }

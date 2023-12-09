@@ -8,6 +8,7 @@ public class ShipAgent : Ship
     public AsteroidsTrainer trainer;
 
     [SerializeField] int numOfRaycasts = 8;
+    [SerializeField] float rayDistance = 35;
     float rayBetweenAngle;
     [SerializeField] LayerMask ignoreLayers;
 
@@ -39,23 +40,25 @@ public class ShipAgent : Ship
             {
                 Vector3 direction = Quaternion.AngleAxis(i * rayBetweenAngle, Vector3.up) * transform.forward;
                 RaycastHit[] hitResults = new RaycastHit[5];
-                int hits = Physics.RaycastNonAlloc(transform.position, direction, hitResults, 35, ~ignoreLayers, QueryTriggerInteraction.Collide);
-                System.Array.Sort(hitResults, (x, y) => x.distance.CompareTo(y.distance));
                 bool noHit = true;
                 input[i] = 0;
-                for (int j = 0; j < hitResults.Length; j++)
+                if(Physics.RaycastNonAlloc(transform.position, direction, hitResults, rayDistance, ~ignoreLayers, QueryTriggerInteraction.Collide) > 0)
                 {
-                    if (hitResults[j].transform != null && hitResults[j].transform.GetComponent<CustomLayers>().gameLayer == customLayers.gameLayer)
+                    System.Array.Sort(hitResults, (x, y) => x.distance.CompareTo(y.distance));
+                    for (int j = 0; j < hitResults.Length; j++)
                     {
-                        input[i] = (35 - hitResults[j].distance) / 35;
-                        Debug.DrawLine(transform.position, hitResults[j].point, Color.red, Time.fixedDeltaTime);
-                        noHit = false;
-                        break;
+                        if (hitResults[j].transform != null && hitResults[j].transform.GetComponent<CustomLayers>().gameLayer == customLayers.gameLayer)
+                        {
+                            input[i] = (rayDistance - hitResults[j].distance) / rayDistance;
+                            Debug.DrawLine(transform.position, hitResults[j].point, Color.red, Time.fixedDeltaTime);
+                            noHit = false;
+                            break;
+                        }
                     }
                 }
 
                 if(layerActive && noHit)
-                    Debug.DrawLine(transform.position, transform.position + direction * 35, Color.green, Time.fixedDeltaTime);
+                    Debug.DrawLine(transform.position, transform.position + direction * rayDistance, Color.green, Time.fixedDeltaTime);
             }
 
             float[] output = neuralNetwork.Forward(input);

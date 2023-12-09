@@ -121,8 +121,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 61903127a0b80924c826ede71ecff107, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxX: 40
-  maxZ: 40
+  maxX: 35
+  maxZ: 35
 --- !u!54 &4911349156585277710
 Rigidbody:
   m_ObjectHideFlags: 0
